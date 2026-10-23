@@ -10,7 +10,7 @@ publication on 2026-10-23.
 | `pilot_light/transitions.py` | New, written for publication | An in-memory rewrite of the spine's resolution step. `is_approval` and `watermark` are extracted unchanged. The reset for a licence that returns to the pending list is new. |
 | `pilot_light/match.py` | New | A single-source version of the calling path in the lead build. |
 | `examples/` | New | Synthetic fixtures and the walkthrough. |
-| `tests/` | New | Regression tests. `defects.py` labels each defective function PRESERVED or RECONSTRUCTED. |
+| `tests/` | New | Regression tests. `defects.py` labels each defective function PRESERVED, ADAPTED or RECONSTRUCTED. |
 
 Not published: source fetchers, the classification and lead build, the event store and its
 export, the site generator, pricing, and all data.

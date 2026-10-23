@@ -1,4 +1,4 @@
-"""Two venues, nine candidate records, and the decision on each.
+"""Two venues, ten candidate records, and the decision on each.
 
 Run from the repo root:  python3 examples/walkthrough.py
 """

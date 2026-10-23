@@ -1,8 +1,9 @@
 """The defective behaviours the regression tests must catch.
 
-Each one is labelled PRESERVED (the production code as it stood, copied without change) or
-RECONSTRUCTED (rebuilt from the failure log, because the original version was replaced the same
-day and not kept). A test passes only when the current code behaves correctly AND the defective
+Each one is labelled PRESERVED (the production code as it stood, copied without change),
+ADAPTED (the production rule, rewritten only to fit this module's interfaces), or RECONSTRUCTED
+(rebuilt from the failure log, because the original version was replaced the same day and not
+kept). A test passes only when the current code behaves correctly AND the defective
 version produces the historical wrong answer, which proves the test would have caught it.
 """
 from pilot_light.normalize import addr_key
@@ -26,11 +27,18 @@ def accept_address_counts(sig, *, building_count=1):
 
 
 def accept_without_city_rule(sig, *, building_count=1):
-    """PRESERVED, production until 2026-10-23: two name-derived signals passed with no check that
-    the records were in the same city."""
+    """ADAPTED, production until 2026-10-23: two name-derived signals passed with no check that
+    the records were in the same city. Production had no _CITY diagnostic; it is ignored here."""
     real = sig - {"_ADDRESS", "_CITY"}
     if building_count >= MULTI_TENANT_THRESHOLD and "SUITE" not in real:
         return False, "multi_tenant_no_suite"
+    return (len(real) >= 2, "two_keys")
+
+
+def accept_without_suite_rule(sig, *, building_count=1):
+    """RECONSTRUCTED, before 2026-08-14: no suite check in shared buildings, so an operator's
+    second location in the same centre was attributed to the first."""
+    real = {s for s in sig if not s.startswith("_")}
     return (len(real) >= 2, "two_keys")
 
 
@@ -43,8 +51,8 @@ def trade_overlap_with_generic(a, b):
 
 
 def building_census_rows(rows, addr_of, city_of, tenant_of=None):
-    """PRESERVED, production until 2026-10-23: counted rows, so one tenant filed twice
-    counted as two."""
+    """PRESERVED, production until 2026-10-23, apart from the unused tenant_of argument that the
+    current signature needs: counted rows, so one tenant filed twice counted as two."""
     c = {}
     for r in rows:
         k = addr_key(addr_of(r), city_of(r))
@@ -86,8 +94,9 @@ class SameDayTracker(transitions.LicenceTracker):
 
 
 class NoResetTracker(transitions.LicenceTracker):
-    """PRESERVED logic, production until 2026-10-23: a parked licence that reappeared on the
-    pending list kept its parked date and was later reported as having left."""
+    """ADAPTED, production until 2026-10-23: the event spine's rule, rewritten into this tracker
+    form. A parked licence that reappeared on the pending list kept its parked date and was later
+    reported as having left."""
 
     def observe(self, day, pending, issued_rows):
         issued = {r["license_id"]: r for r in issued_rows}

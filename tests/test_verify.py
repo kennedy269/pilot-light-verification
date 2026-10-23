@@ -60,6 +60,11 @@ class MultiTenantBuildings(unittest.TestCase):
         self.assertFalse(d["b4"])
         self.assertTrue(decisions(CENTRE, accept_fn=defects.accept_address_counts)["b2"])
 
+    def test_same_owner_in_another_suite_is_rejected(self):
+        # Entity and trade name both agree and the city matches, so only the suite rule stops it.
+        self.assertFalse(decisions(CENTRE)["b6"])
+        self.assertTrue(decisions(CENTRE, accept_fn=defects.accept_without_suite_rule)["b6"])
+
     def test_the_same_suite_is_accepted(self):
         self.assertTrue(decisions(CENTRE)["b1"])
 
@@ -88,9 +93,21 @@ class NamesOnlyAcrossCities(unittest.TestCase):
     def test_same_names_same_city_still_accepted(self):
         self.assertTrue(decisions(STANDALONE)["a1"])
 
-    def test_a_non_name_signal_needs_no_city(self):
-        sig = {"ENTITY", "TAXID"}
+    def test_tax_id_plus_entity_needs_no_city(self):
+        sig = signals(STANDALONE["venue"], cand_entity="Juniper Smokehouse Holdings",
+                      cand_taxid="32000000001", venue_taxid="32000000001", cand_city="El Paso")
+        self.assertEqual(sig, {"ENTITY", "TAXID"})
         self.assertTrue(accept(sig)[0])
+
+    def test_person_name_counts_as_a_name_signal(self):
+        venue = STANDALONE["venue"]
+        kw = dict(cand_entity="Juniper Smokehouse Holdings", cand_person="Sample, Alex",
+                  venue_people=venue["people"])
+        same_city = signals(venue, cand_city="Austin", **kw)
+        other_city = signals(venue, cand_city="El Paso", **kw)
+        self.assertIn("PERSON", same_city)
+        self.assertTrue(accept(same_city)[0])
+        self.assertEqual(accept(other_city), (False, "names_only_no_city"))
 
 
 class DistinctTenantCensus(unittest.TestCase):
@@ -108,7 +125,7 @@ class DistinctTenantCensus(unittest.TestCase):
         self.assertEqual(list(census.values()), [2])
 
     def test_true_match_survives_in_a_two_tenant_building(self):
-        b5 = dict(CENTRE["candidates"][4])
+        b5 = dict(next(c for c in CENTRE["candidates"] if c["id"] == "b5"))
         self.scenario["candidates"].append(b5)
         self.assertTrue(decisions(self.scenario)["b5"])
         self.assertFalse(decisions(self.scenario, census_fn=defects.building_census_rows)["b5"])

@@ -16,7 +16,8 @@ python3 examples/walkthrough.py
 python3 -m unittest discover -s tests -t .
 ```
 
-The walkthrough runs two synthetic venues against nine candidate records. An excerpt of its output:
+The walkthrough runs two synthetic venues against ten candidate records. An excerpt of its
+output, with the signal lines and two rows left out:
 
 ```
 A restaurant in its own building: Juniper Smokehouse, 4100 Example Pkwy, Austin
@@ -28,6 +29,7 @@ A restaurant in its own building: Juniper Smokehouse, 4100 Example Pkwy, Austin
 A restaurant in a shopping centre: Cedar and Salt, 2200 Sample Blvd Ste 5, Houston
   b1  ACCEPT  ENTITY+SUITE+TRADE       the same restaurant, same suite
   b2  reject  multi_tenant_no_suite    a gym three doors down
+  b6  reject  multi_tenant_no_suite    the same owner's second restaurant in the same centre
   b5  reject  multi_tenant_no_suite    the same company, permit filed without a suite
 ```
 
@@ -63,10 +65,14 @@ The rules that came out of that day are in `pilot_light/verify.py`:
 4. Two name signals alone also need the same city. This rule was added on 2026-10-23 (see below).
 5. A source that returns zero rows is a bug until shown otherwise.
 
-Each rule has a regression test in `tests/test_verify.py`. Every test checks the current code and
-also runs the defective version from `tests/defects.py`, where it has to reproduce the original
-wrong answer. Defects there are labelled PRESERVED (the production code as it was) or
+Each rule has regression tests in `tests/test_verify.py`. Eleven of the 24 tests also run a
+defective version of the code from `tests/defects.py`, which has to reproduce the original wrong
+answer, so each of those tests is shown to catch its bug. The others check that true matches still
+pass and cover cases with no historical defect. Each defect is labelled PRESERVED (the production
+code as it was), ADAPTED (the production rule, rewritten only to fit this repo's interfaces) or
 RECONSTRUCTED (rebuilt from the failure log, because the original was replaced the same day).
+The zero-row guards wrap the source pulls in the private fetchers, so here they are tested on
+their own.
 
 ## Licence outcomes and the publishing lag
 
@@ -98,7 +104,8 @@ notice in the state, and I had read it as the food-service inventory. A Codex re
 
 On 2026-10-23 a Codex review of the publication plan probed the production code and reported three
 defects. I confirmed each one by reading the code. All three are fixed here and covered by tests.
-The private pipeline has not been patched yet.
+The production pipeline has not run
+since August 2026 and has not received these fixes yet.
 
 - Entity name and trade name both come from names, so a same-named
   business in another city could pass the two-signal rule. In production the callers narrow

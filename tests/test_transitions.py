@@ -48,6 +48,19 @@ class PublishingLag(unittest.TestCase):
         self.assertEqual(out, [("L8", "left_pending_without_issued_match", "2026-08-18")])
 
 
+class NoIssuedFileUpdate(unittest.TestCase):
+    """If the issued file stops advancing, a parked licence is still resolved after 21 days."""
+
+    def test_parked_licence_resolves_after_21_days(self):
+        t = LicenceTracker()
+        stuck = [issued("X", "2026-08-14")]
+        t.observe("2026-08-17", {"L5": "2026-07-20"}, stuck)
+        t.observe("2026-08-18", {}, stuck)
+        self.assertEqual(t.observe("2026-09-07", {}, stuck), [])
+        self.assertEqual(t.observe("2026-09-08", {}, stuck),
+                         [("L5", "left_pending_without_issued_match", "2026-08-18")])
+
+
 class LicenceReappears(unittest.TestCase):
     """Found 2026-10-23 in publication review: a licence that dropped off the pending list for a
     day and came back was later reported as having left."""
