@@ -1,0 +1,56 @@
+{
+  "_note": "Synthetic records. Every business, person, street, and tax id here is invented. They are shaped like Texas liquor-licence and sales-tax-permit rows, using real Texas city names so that city agreement can be tested.",
+  "scenarios": [
+    {
+      "title": "A restaurant in its own building",
+      "venue": {
+        "trade_name": "Juniper Smokehouse",
+        "legal_entity": "Juniper Smokehouse Holdings LLC",
+        "address": "4100 Example Pkwy",
+        "city": "Austin",
+        "people": ["Alex Q Sample"]
+      },
+      "candidates": [
+        {"id": "a1", "label": "the same restaurant in the permit file",
+         "entity": "Juniper Smokehouse Holdings", "trade": "Juniper Smokehouse",
+         "address": "4100 Example Parkway", "city": "Austin"},
+        {"id": "a2", "label": "a same-named business 500 miles away",
+         "entity": "Juniper Smokehouse Holdings LLC", "trade": "Juniper Smokehouse",
+         "address": "77 Sample St", "city": "El Paso"},
+        {"id": "a3", "label": "a different restaurant sharing one distinctive word",
+         "entity": "Ridgeline Hospitality Inc", "trade": "Juniper Grill",
+         "address": "9 Fictional Rd", "city": "Austin"},
+        {"id": "a4", "label": "an earlier business at the same address",
+         "entity": "Prior Tenant Foods LLC", "trade": "Corner Diner",
+         "address": "4100 Example Pkwy", "city": "Austin"}
+      ]
+    },
+    {
+      "title": "A restaurant in a shopping centre",
+      "venue": {
+        "trade_name": "Cedar and Salt",
+        "legal_entity": "Cedar Salt Kitchen LLC",
+        "address": "2200 Sample Blvd Ste 5",
+        "city": "Houston",
+        "people": ["Jordan R Placeholder"]
+      },
+      "candidates": [
+        {"id": "b1", "label": "the same restaurant, same suite",
+         "entity": "Cedar Salt Kitchen LLC", "trade": "Cedar and Salt",
+         "address": "2200 Sample Boulevard Suite 5", "city": "Houston"},
+        {"id": "b2", "label": "a gym three doors down",
+         "entity": "Placeholder Fitness LLC", "trade": "Placeholder Fitness",
+         "address": "2200 Sample Blvd Ste 30", "city": "Houston"},
+        {"id": "b3", "label": "the same gym, filed twice",
+         "entity": "Placeholder Fitness LLC", "trade": "Placeholder Fitness",
+         "address": "2200 Sample Blvd Ste 30", "city": "Houston"},
+        {"id": "b4", "label": "a dental office in the same centre",
+         "entity": "Sample Dental PLLC", "trade": "Sample Dental",
+         "address": "2200 Sample Blvd Ste 40", "city": "Houston"},
+        {"id": "b5", "label": "the same company, permit filed without a suite",
+         "entity": "Cedar Salt Kitchen LLC", "trade": "Cedar and Salt",
+         "address": "2200 Sample Blvd", "city": "Houston"}
+      ]
+    }
+  ]
+}
