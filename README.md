@@ -133,4 +133,5 @@ prompted it. The code
 was written with Claude Code under my direction. Codex reviewed the work in three rounds (data,
 product and launch readiness), and every finding was fixed and re-checked. A fourth review, before
 publication, found the three defects above. `PROVENANCE.md` lists what was extracted, adapted or
-written new for this repo.
+written new for this repo. `DECISIONS.md` records one call where I overruled
+Claude's recommendation.
